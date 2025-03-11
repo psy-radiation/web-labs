@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор палива</title>
+</head>
+<body>
+    <h1>Веб-калькулятор для розрахунку палива (Варіант 9)</h1>
+    <!-- Кнопка для розрахунку твердого палива -->
+    <button onclick="calculateFuel()">Розрахувати тверде паливо</button>
+    <h2>Результати:</h2>
+    <p id="results"></p>
+
+    <script>
+        function calculateFuel() {
+            // Вхідні параметри для розрахунку (у відсотках)
+            let HP = 2.6, CP = 38.6, SP = 3.80, NP = 0.80, OP = 3.10, WP = 11.0, AP = 40.1;
+            
+            // Коефіцієнти переходу до сухої та горючої маси
+            let KRS = 100 / (100 - WP);
+            let KRG = 100 / (100 - WP - AP);
+            
+            // Розрахунок складу сухої маси
+            let HS = HP * KRS;
+            let CS = CP * KRS;
+            let SS = SP * KRS;
+            let NS = NP * KRS;
+            let OS = OP * KRS;
+            let AS = AP * KRS;
+            
+            // Розрахунок складу горючої маси
+            let HG = HP * KRG;
+            let CG = CP * KRG;
+            let SG = SP * KRG;
+            let NG = NP * KRG;
+            let OG = OP * KRG;
+            
+            // Розрахунок нижчої теплоти згоряння (МДж/кг)
+            let QrH = (339 * CP + 1030 * HP - 108.8 * (OP - SP) - 25 * WP) / 1000;
+            
+            // Вивід результатів на сторінку
+            document.getElementById("results").innerHTML = `
+                Коефіцієнт переходу до сухої маси: ${KRS.toFixed(2)}<br>
+                Коефіцієнт переходу до горючої маси: ${KRG.toFixed(2)}<br>
+                Склад сухої маси: H=${HS.toFixed(2)}%, C=${CS.toFixed(2)}%, S=${SS.toFixed(2)}%, N=${NS.toFixed(2)}%, O=${OS.toFixed(2)}%, A=${AS.toFixed(2)}%<br>
+                Склад горючої маси: H=${HG.toFixed(2)}%, C=${CG.toFixed(2)}%, S=${SG.toFixed(2)}%, N=${NG.toFixed(2)}%, O=${OG.toFixed(2)}%<br>
+                Нижча теплота згоряння: ${QrH.toFixed(4)} МДж/кг`;
+        }
+    </script>
+
+    <h1>Мобільний калькулятор мазуту</h1>
+    <!-- Кнопка для розрахунку мазуту -->
+    <button onclick="calculateMazut()">Розрахувати мазут</button>
+    <h2>Результати для мазуту:</h2>
+    <p id="results-mazut"></p>
+
+    <script>
+        function calculateMazut() {
+            // Вхідні параметри для мазуту
+            let CG = 85.50, HG = 11.20, OG = 0.80, SG = 2.50, Qi_daf = 40.40, WR = 2.00, Ad = 0.15, Vg = 333.3;
+            
+            // Коефіцієнт переходу до робочої маси
+            let factor = (100 - WR - Ad) / 100;
+            
+            // Розрахунок елементного складу робочої маси
+            let CR = CG * factor;
+            let HR = HG * factor;
+            let OR = OG * factor;
+            let SR = SG * factor;
+            let AR = Ad * (100 - WR) / 100;
+            let VR = Vg * (100 - WR) / 100;
+            
+            // Розрахунок нижчої теплоти згоряння для робочої маси (МДж/кг)
+            let QiR = Qi_daf * (100 - WR) / 100;
+            
+            // Вивід результатів на сторінку
+            document.getElementById("results-mazut").innerHTML = `
+                Склад робочої маси мазуту: H=${HR.toFixed(2)}%, C=${CR.toFixed(2)}%, S=${SR.toFixed(2)}%, O=${OR.toFixed(2)}%, A=${AR.toFixed(2)}%, V=${VR.toFixed(2)} мг/кг<br>
+                Нижча теплота згоряння мазуту: ${QiR.toFixed(2)} МДж/кг`;
+        }
+    </script>
+</body>
+</html>
