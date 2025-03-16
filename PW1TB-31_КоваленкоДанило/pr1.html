@@ -7,21 +7,32 @@
 </head>
 <body>
     <h1>Веб-калькулятор для розрахунку палива (Варіант 9)</h1>
-    <!-- Кнопка для розрахунку твердого палива -->
-    <button onclick="calculateFuel()">Розрахувати тверде паливо</button>
+    <form id="fuelForm">
+        <label>H (%): <input type="number" id="HP" value="2.6"></label><br>
+        <label>C (%): <input type="number" id="CP" value="38.6"></label><br>
+        <label>S (%): <input type="number" id="SP" value="3.80"></label><br>
+        <label>N (%): <input type="number" id="NP" value="0.80"></label><br>
+        <label>O (%): <input type="number" id="OP" value="3.10"></label><br>
+        <label>W (%): <input type="number" id="WP" value="11.0"></label><br>
+        <label>A (%): <input type="number" id="AP" value="40.1"></label><br>
+        <button type="button" onclick="calculateFuel()">Розрахувати тверде паливо</button>
+    </form>
     <h2>Результати:</h2>
     <p id="results"></p>
 
     <script>
         function calculateFuel() {
-            // Вхідні параметри для розрахунку (у відсотках)
-            let HP = 2.6, CP = 38.6, SP = 3.80, NP = 0.80, OP = 3.10, WP = 11.0, AP = 40.1;
+            let HP = parseFloat(document.getElementById("HP").value);
+            let CP = parseFloat(document.getElementById("CP").value);
+            let SP = parseFloat(document.getElementById("SP").value);
+            let NP = parseFloat(document.getElementById("NP").value);
+            let OP = parseFloat(document.getElementById("OP").value);
+            let WP = parseFloat(document.getElementById("WP").value);
+            let AP = parseFloat(document.getElementById("AP").value);
             
-            // Коефіцієнти переходу до сухої та горючої маси
             let KRS = 100 / (100 - WP);
             let KRG = 100 / (100 - WP - AP);
             
-            // Розрахунок складу сухої маси
             let HS = HP * KRS;
             let CS = CP * KRS;
             let SS = SP * KRS;
@@ -29,17 +40,14 @@
             let OS = OP * KRS;
             let AS = AP * KRS;
             
-            // Розрахунок складу горючої маси
             let HG = HP * KRG;
             let CG = CP * KRG;
             let SG = SP * KRG;
             let NG = NP * KRG;
             let OG = OP * KRG;
             
-            // Розрахунок нижчої теплоти згоряння (МДж/кг)
             let QrH = (339 * CP + 1030 * HP - 108.8 * (OP - SP) - 25 * WP) / 1000;
             
-            // Вивід результатів на сторінку
             document.getElementById("results").innerHTML = `
                 Коефіцієнт переходу до сухої маси: ${KRS.toFixed(2)}<br>
                 Коефіцієнт переходу до горючої маси: ${KRG.toFixed(2)}<br>
@@ -50,20 +58,33 @@
     </script>
 
     <h1>Мобільний калькулятор мазуту</h1>
-    <!-- Кнопка для розрахунку мазуту -->
-    <button onclick="calculateMazut()">Розрахувати мазут</button>
+    <form id="mazutForm">
+        <label>C (%): <input type="number" id="CG" value="85.50"></label><br>
+        <label>H (%): <input type="number" id="HG" value="11.20"></label><br>
+        <label>O (%): <input type="number" id="OG" value="0.80"></label><br>
+        <label>S (%): <input type="number" id="SG" value="2.50"></label><br>
+        <label>Qi_daf (МДж/кг): <input type="number" id="Qi_daf" value="40.40"></label><br>
+        <label>W (%): <input type="number" id="WR" value="2.00"></label><br>
+        <label>A (%): <input type="number" id="Ad" value="0.15"></label><br>
+        <label>V (мг/кг): <input type="number" id="Vg" value="333.3"></label><br>
+        <button type="button" onclick="calculateMazut()">Розрахувати мазут</button>
+    </form>
     <h2>Результати для мазуту:</h2>
     <p id="results-mazut"></p>
 
     <script>
         function calculateMazut() {
-            // Вхідні параметри для мазуту
-            let CG = 85.50, HG = 11.20, OG = 0.80, SG = 2.50, Qi_daf = 40.40, WR = 2.00, Ad = 0.15, Vg = 333.3;
+            let CG = parseFloat(document.getElementById("CG").value);
+            let HG = parseFloat(document.getElementById("HG").value);
+            let OG = parseFloat(document.getElementById("OG").value);
+            let SG = parseFloat(document.getElementById("SG").value);
+            let Qi_daf = parseFloat(document.getElementById("Qi_daf").value);
+            let WR = parseFloat(document.getElementById("WR").value);
+            let Ad = parseFloat(document.getElementById("Ad").value);
+            let Vg = parseFloat(document.getElementById("Vg").value);
             
-            // Коефіцієнт переходу до робочої маси
             let factor = (100 - WR - Ad) / 100;
             
-            // Розрахунок елементного складу робочої маси
             let CR = CG * factor;
             let HR = HG * factor;
             let OR = OG * factor;
@@ -71,10 +92,8 @@
             let AR = Ad * (100 - WR) / 100;
             let VR = Vg * (100 - WR) / 100;
             
-            // Розрахунок нижчої теплоти згоряння для робочої маси (МДж/кг)
             let QiR = Qi_daf * (100 - WR) / 100;
             
-            // Вивід результатів на сторінку
             document.getElementById("results-mazut").innerHTML = `
                 Склад робочої маси мазуту: H=${HR.toFixed(2)}%, C=${CR.toFixed(2)}%, S=${SR.toFixed(2)}%, O=${OR.toFixed(2)}%, A=${AR.toFixed(2)}%, V=${VR.toFixed(2)} мг/кг<br>
                 Нижча теплота згоряння мазуту: ${QiR.toFixed(2)} МДж/кг`;
