@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор викидів</title>
+</head>
+<body>
+    <h1>Калькулятор валових викидів твердих частинок</h1>
+    <button onclick="calculateEmissions()">Розрахувати викиди</button>
+    <h2>Результати:</h2>
+    <p id="results"></p>
+
+    <script>
+        function calculateEmissions() {
+            // Вхідні дані (можна змінювати)
+            let coalMass = parseFloat(prompt("Маса вугілля (т):", "364962.61"));
+            let oilMass = parseFloat(prompt("Маса мазуту (т):", "196736.07"));
+            let gasVolume = parseFloat(prompt("Об'єм природного газу (тис. м3):", "216824.33")) * 1000; // Переводимо в м3
+            
+            // Дані по характеристикам палива
+            let Qr_coal = 20.47; // МДж/кг
+            let Qr_oil = 40.40; // МДж/кг
+            let Qr_gas = 33.08; // МДж/м3
+            let Ar_coal = 25.20; // %
+            let Gwin_coal = 1.5; // %
+            let Gshl_coal = 0.5; // %
+            let Avin_coal = 0.80; // Котел з рідким шлаковидаленням
+            let etaZu = 0.985; // Ефективність золоуловлювальної установки
+            
+            // Розрахунок показника емісії твердих частинок для вугілля (г/ГДж)
+            let k_tv_coal = (Ar_coal * Avin_coal * (100 - Gwin_coal - Gshl_coal) / 100) / (Qr_coal * (1 - etaZu)) * 1000;
+            
+            // Розрахунок валового викиду твердих частинок для вугілля (т)
+            let E_coal = (k_tv_coal * coalMass * 1000) / (Qr_coal * 1000000);
+            
+            // Розрахунок показника емісії твердих частинок для мазуту (г/ГДж)
+            let k_tv_oil = 0.57; // За формулою 2.2
+            
+            // Розрахунок валового викиду твердих частинок для мазуту (т)
+            let E_oil = (k_tv_oil * oilMass * 1000) / (Qr_oil * 1000000);
+            
+            // Розрахунок показника емісії твердих частинок для природного газу (г/ГДж)
+            let Ar_gas = 0; // Газ не містить золи
+            let Gwin_gas = 0; // Горючі речовини у викидах відсутні
+            let Gshl_gas = 0; // Немає шлаку
+            let Avin_gas = 0; // Частка леткої золи
+            
+            let k_tv_gas = (Ar_gas * Avin_gas * (100 - Gwin_gas - Gshl_gas) / 100) / (Qr_gas * (1 - etaZu)) * 1000;
+            
+            // Розрахунок валового викиду твердих частинок для природного газу (т)
+            let E_gas = (k_tv_gas * gasVolume * 1000) / (Qr_gas * 1000000);
+            
+            // Вивід результатів
+            document.getElementById("results").innerHTML = `
+                Показник емісії твердих частинок для вугілля: ${k_tv_coal.toFixed(2)} г/ГДж<br>
+                Валовий викид твердих частинок при спалюванні вугілля: ${E_coal.toFixed(2)} т<br>
+                Показник емісії твердих частинок для мазуту: ${k_tv_oil.toFixed(2)} г/ГДж<br>
+                Валовий викид твердих частинок при спалюванні мазуту: ${E_oil.toFixed(2)} т<br>
+                Показник емісії твердих частинок для природного газу: ${k_tv_gas.toFixed(2)} г/ГДж<br>
+                Валовий викид твердих частинок при спалюванні природного газу: ${E_gas.toFixed(2)} т
+            `;
+        }
+    </script>
+</body>
+</html>
