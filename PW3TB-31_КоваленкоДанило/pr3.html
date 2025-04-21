@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор прибутку СЕС</title>
+</head>
+<body>
+    <h1>Калькулятор прибутку від сонячної електростанції</h1>
+    <form id="solarForm">
+        <label>Площа електростанції (м²): <input type="number" id="area" value="100"></label><br>
+        <label>Сонячні години на рік (год/рік): <input type="number" id="sunHours" value="1200"></label><br>
+        <label>Потужність панелі (кВт): <input type="number" id="panelPower" value="0.3"></label><br>
+        <label>Кількість панелей: <input type="number" id="panelCount" value="20"></label><br>
+        <label>ККД панелей (%): <input type="number" id="efficiency" value="18"></label><br>
+        <label>Тариф (грн/кВт·год): <input type="number" id="tariff" value="5.2"></label><br>
+        <button type="button" onclick="calculateProfit()">Розрахувати прибуток</button>
+    </form>
+
+    <h2>Результати:</h2>
+    <p id="results"></p>
+
+    <script>
+        function calculateProfit() {
+            let area = parseFloat(document.getElementById("area").value);
+            let sunHours = parseFloat(document.getElementById("sunHours").value);
+            let panelPower = parseFloat(document.getElementById("panelPower").value);
+            let panelCount = parseFloat(document.getElementById("panelCount").value);
+            let efficiency = parseFloat(document.getElementById("efficiency").value) / 100;
+            let tariff = parseFloat(document.getElementById("tariff").value);
+
+            let energy = panelPower * panelCount * efficiency * sunHours; // кВт·год на рік
+            let profit = energy * tariff; // грн
+
+            document.getElementById("results").innerHTML = `
+                Вироблена електроенергія: ${energy.toFixed(2)} кВт·год/рік<br>
+                Очікуваний прибуток: ${profit.toFixed(2)} грн/рік
+            `;
+        }
+    </script>
+</body>
+</html>
