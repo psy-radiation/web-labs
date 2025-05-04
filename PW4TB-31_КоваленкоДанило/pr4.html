@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор струмів КЗ та перевірки стійкості</title>
+</head>
+<body>
+    <h1>Калькулятор струмів короткого замикання</h1>
+    <form id="shortCircuitForm">
+        <label>Режим роботи ХПнЕМ:
+            <select id="mode" onchange="setModeParameters()">
+                <option value="normal">Нормальний</option>
+                <option value="minimum">Мінімальний</option>
+                <option value="emergency">Аварійний</option>
+            </select>
+        </label><br><br>
+
+        <label>U, кВ: <input type="number" id="U" step="0.1" value="10"></label><br>
+        <label>Sкз, МВА: <input type="number" id="Skz" step="0.1" value="500"></label><br>
+        <label>Zф, Ом: <input type="number" id="Zf" step="0.01" value="1.2"></label><br><br>
+
+        <label>Час t, c: <input type="number" id="time" step="0.1" value="1"></label><br>
+        <label>k (А²·с/мм²): <input type="number" id="k" value="143"></label><br>
+
+        <label>Кабель:
+            <select id="cable" onchange="setCableParameters()">
+                <option value="70">70 мм²</option>
+                <option value="95">95 мм²</option>
+                <option value="120" selected>120 мм²</option>
+                <option value="150">150 мм²</option>
+            </select>
+        </label><br>
+        <label>Допустимий Iдин, кА: <input type="number" id="I_dyn_allow" value="25"></label><br><br>
+
+        <button type="button" onclick="calculate()">Розрахувати</button>
+    </form>
+
+    <h2>Результати:</h2>
+    <p id="results"></p>
+
+    <script>
+        const cableData = {
+            "70": { S: 70 },
+            "95": { S: 95 },
+            "120": { S: 120 },
+            "150": { S: 150 }
+        };
+
+        const modeData = {
+            "normal": { Skz: 500, Zf: 1.2 },
+            "minimum": { Skz: 300, Zf: 1.8 },
+            "emergency": { Skz: 200, Zf: 2.5 }
+        };
+
+        function setCableParameters() {
+            // Можна додати більше логіки для опору кабелю
+        }
+
+        function setModeParameters() {
+            const mode = document.getElementById("mode").value;
+            const params = modeData[mode];
+            document.getElementById("Skz").value = params.Skz;
+            document.getElementById("Zf").value = params.Zf;
+        }
+
+        function calculate() {
+            const U = parseFloat(document.getElementById("U").value);
+            const Skz = parseFloat(document.getElementById("Skz").value);
+            const Zf = parseFloat(document.getElementById("Zf").value);
+            const t = parseFloat(document.getElementById("time").value);
+            const k = parseFloat(document.getElementById("k").value);
+            const cable = document.getElementById("cable").value;
+            const S = cableData[cable].S;
+            const I_dyn_allow = parseFloat(document.getElementById("I_dyn_allow").value);
+
+            const I_3f = (Skz * 1000) / (Math.sqrt(3) * U); // кА
+            const I_1f = (U * 1000) / (Math.sqrt(3) * Zf);   // кА
+            const I_therm = Math.sqrt((k * Math.pow(S, 2)) / t) / 1000; // кА
+            const I_dyn = 2.5 * I_3f; // кА
+
+            const therm_ok = I_3f <= I_therm;
+            const dyn_ok = I_dyn <= I_dyn_allow;
+
+            document.getElementById("results").innerHTML = `
+                🔌 Трифазний струм КЗ: <strong>${I_3f.toFixed(2)} кА</strong><br>
+                🔌 Однофазний струм КЗ: <strong>${I_1f.toFixed(2)} кА</strong><br>
+                ♨ Термічна стійкість кабелю: <strong>${I_therm.toFixed(2)} кА</strong> — 
+                ${therm_ok ? "<span style='color:green;'>виконано</span>" : "<span style='color:red;'>не виконано</span>"}<br>
+                ⚡ Динамічний струм КЗ: <strong>${I_dyn.toFixed(2)} кА</strong><br>
+                ⚙ Перевірка динамічної стійкості: 
+                ${dyn_ok ? "<span style='color:green;'>виконано</span>" : "<span style='color:red;'>не виконано</span>"}
+            `;
+        }
+
+        // Ініціалізація
+        setModeParameters();
+    </script>
+</body>
+</html>
