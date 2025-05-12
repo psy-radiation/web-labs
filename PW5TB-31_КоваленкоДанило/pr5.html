@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Калькулятор надійності та збитків електропостачання</title>
+</head>
+<body>
+    <h1>Порівняння надійності систем та розрахунок збитків</h1>
+
+    <h2>1. Порівняння надійності</h2>
+    <form id="reliabilityForm">
+        <label>Інтенсивність відмови λ, 1/км·рік: <input type="number" id="lambda" step="0.0001" value="0.05"></label><br>
+        <label>Довжина лінії L, км: <input type="number" id="length" value="10"></label><br>
+        <label>Середній час відновлення t<sub>ср</sub>, год: <input type="number" id="t_restore" value="2"></label><br>
+    </form>
+
+    <h2>2. Розрахунок збитків при однотрансформаторній ГТП</h2>
+    <form id="lossForm">
+        <label>Вартість 1 кВт·год C<sub>вт</sub>, грн: <input type="number" id="cost" value="5"></label><br>
+        <label>Навантаження N, кВт: <input type="number" id="load" value="1000"></label><br>
+        <label>Час перерви t<sub>вт</sub>, год: <input type="number" id="time_lost" value="3"></label><br><br>
+        <button type="button" onclick="calculate()">Розрахувати</button>
+    </form>
+
+    <h2>Результати:</h2>
+    <p id="results"></p>
+
+    <script>
+        function calculate() {
+            const lambda = parseFloat(document.getElementById("lambda").value);
+            const L = parseFloat(document.getElementById("length").value);
+            const t = parseFloat(document.getElementById("t_restore").value);
+
+            const P1 = lambda * L * t;
+            const P2 = (Math.pow(lambda, 2) * Math.pow(L, 2) * Math.pow(t, 2)) / 2;
+
+            const cost = parseFloat(document.getElementById("cost").value);
+            const N = parseFloat(document.getElementById("load").value);
+            const t_lost = parseFloat(document.getElementById("time_lost").value);
+            const Z = cost * N * t_lost;
+
+            document.getElementById("results").innerHTML = `
+                 Ймовірність відмови одноколової системи: <strong>${P1.toFixed(6)}</strong><br>
+                 Ймовірність відмови двоколової системи: <strong>${P2.toFixed(6)}</strong><br><br>
+                 Збитки при перерві електропостачання: <strong>${Z.toFixed(2)} грн</strong>
+            `;
+        }
+    </script>
+</body>
+</html>
